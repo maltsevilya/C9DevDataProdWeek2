@@ -1,0 +1,13 @@
+name: DevDataProductsWeek2Assignment
+title: DevDataProductsWeek2Assignment
+username:
+account: ilyamaltsev
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 558965
+bundleId: 1689134
+url: https://ilyamaltsev.shinyapps.io/DevDataProductsWeek2Assignment/
+when: 1541663766.09194
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|Meteorite_Landings.html|Meteorite_Landings.Rmd

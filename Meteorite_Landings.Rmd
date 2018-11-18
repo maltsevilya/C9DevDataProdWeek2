@@ -1,0 +1,49 @@
+---
+title: "Meteorite Landings"
+author: "Ilya Maltsev"
+date: 'Nov 07, 2018'
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Presenting
+
+```{r loading necessary libraries}
+library(leaflet, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(lubridate, quietly = TRUE, warn.conflicts = FALSE)
+library(maps, quietly = TRUE, warn.conflicts = FALSE)
+```
+
+```{r loading data}
+landingsData <- read.csv("Meteorite_Landings.csv", stringsAsFactors = FALSE) %>%
+  mutate(nametype = factor(nametype), recclass = factor(recclass), fall = factor(fall)) %>%
+  mutate(datetime = parse_date_time(year, c("%m/%d/%Y %I:%M:%S"))) %>%
+  mutate(latitude = reclat) %>%
+  mutate(longitude = reclong) %>%
+  mutate(mass = mass..g.) %>%
+  filter(!is.na(latitude) & !is.na(longitude)) %>%
+  select(-GeoLocation, -year, -reclat, -reclong) %>%
+  mutate(label = paste(sep = "<br>", 
+                       paste0("Name: <b>", name, "</b>"), 
+                       paste0("Class: ", recclass), 
+                       paste0("Type: ", nametype), 
+                       paste0("Year: ", format(datetime, "%Y")), 
+                       paste0("Mass: ", paste0(mass, " g"))))
+landingsData <- landingsData %>%
+  mutate(place = as.factor(map.where(x = landingsData$longitude, y = landingsData$latitude))) %>%
+  filter(place == "Russia")
+```
+
+```{r creating leaflet map, warning=F, message=FALSE}
+landingsData %>% 
+  leaflet() %>% 
+  addTiles() %>%
+  addCircleMarkers(clusterOptions = markerClusterOptions(),
+                   color = ifelse(landingsData$fall == "Fell", "blue", "red"), 
+                   popup = landingsData$label) %>%
+  addLegend(labels = c("Fell", "Found"), colors = c("blue", "red"))
+```
